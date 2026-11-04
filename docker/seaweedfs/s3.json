@@ -1,0 +1,11 @@
+{
+  "identities": [
+    {
+      "name": "vietlegal",
+      "credentials": [
+        { "accessKey": "vietlegal", "secretKey": "vietlegal-secret" }
+      ],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

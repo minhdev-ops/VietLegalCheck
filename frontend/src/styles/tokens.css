@@ -1,0 +1,181 @@
+@import './fonts.css';
+
+@theme {
+  --color-paper: oklch(0.978 0.006 90);
+  --color-surface: oklch(1 0 0);
+  --color-surface-2: oklch(0.952 0.008 90);
+  --color-surface-3: oklch(0.918 0.010 90);
+  --color-line: oklch(0.890 0.008 90);
+  --color-line-strong: oklch(0.800 0.010 90);
+  --color-ink: oklch(0.245 0.019 265);
+  --color-ink-muted: oklch(0.490 0.016 265);
+  --color-ink-faint: oklch(0.620 0.013 265);
+  --color-accent: oklch(0.470 0.095 250);
+  --color-accent-strong: oklch(0.390 0.110 250);
+  --color-seal: oklch(0.500 0.160 27);
+  --color-ok: oklch(0.520 0.100 152);
+  --color-caution: oklch(0.620 0.130 75);
+  --color-info: oklch(0.550 0.070 235);
+  --color-expert: oklch(0.500 0.100 305);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --font-sans: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Source Serif 4', ui-serif, Georgia, serif;
+
+  --measure: 68ch;
+
+  --shadow-1: 0 1px 2px oklch(0.245 0.019 265 / 0.06);
+  --shadow-2: 0 2px 4px oklch(0.245 0.019 265 / 0.05), 0 10px 24px oklch(0.245 0.019 265 / 0.07);
+}
+
+:root {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-paper: oklch(0.205 0.012 265);
+    --color-surface: oklch(0.245 0.012 265);
+    --color-surface-2: oklch(0.280 0.012 265);
+    --color-surface-3: oklch(0.330 0.012 265);
+    --color-line: oklch(0.330 0.012 265);
+    --color-line-strong: oklch(0.420 0.014 265);
+    --color-ink: oklch(0.965 0.006 90);
+    --color-ink-muted: oklch(0.735 0.010 265);
+    --color-ink-faint: oklch(0.600 0.012 265);
+    --color-accent: oklch(0.700 0.090 250);
+    --color-accent-strong: oklch(0.780 0.080 250);
+    --color-seal: oklch(0.680 0.130 27);
+    --color-ok: oklch(0.700 0.090 152);
+    --color-caution: oklch(0.750 0.100 75);
+    --color-info: oklch(0.720 0.060 235);
+    --color-expert: oklch(0.720 0.080 305);
+  }
+}
+
+/* Tailwind v4 maps --color-* automatically; expose fallback CSS vars too for non-utility use. */
+:root {
+  --paper: oklch(0.978 0.006 90);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.952 0.008 90);
+  --surface-3: oklch(0.918 0.010 90);
+  --line: oklch(0.890 0.008 90);
+  --line-strong: oklch(0.800 0.010 90);
+  --ink: oklch(0.245 0.019 265);
+  --ink-muted: oklch(0.490 0.016 265);
+  --ink-faint: oklch(0.620 0.013 265);
+  --accent: oklch(0.470 0.095 250);
+  --accent-strong: oklch(0.390 0.110 250);
+  --seal: oklch(0.500 0.160 27);
+  --ok: oklch(0.520 0.100 152);
+  --caution: oklch(0.620 0.130 75);
+  --info: oklch(0.550 0.070 235);
+  --expert: oklch(0.500 0.100 305);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: oklch(0.205 0.012 265);
+    --surface: oklch(0.245 0.012 265);
+    --surface-2: oklch(0.280 0.012 265);
+    --surface-3: oklch(0.330 0.012 265);
+    --line: oklch(0.330 0.012 265);
+    --line-strong: oklch(0.420 0.014 265);
+    --ink: oklch(0.965 0.006 90);
+    --ink-muted: oklch(0.735 0.010 265);
+    --ink-faint: oklch(0.600 0.012 265);
+    --accent: oklch(0.700 0.090 250);
+    --accent-strong: oklch(0.780 0.080 250);
+    --seal: oklch(0.680 0.130 27);
+    --ok: oklch(0.700 0.090 152);
+    --caution: oklch(0.750 0.100 75);
+    --info: oklch(0.720 0.060 235);
+    --expert: oklch(0.720 0.080 305);
+  }
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+  color: var(--ink);
+}
+
+/* Bề mặt trình duyệt không do ta vẽ vẫn phải thuộc về thiết kế (DESIGN.md). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-faint);
+  background-clip: content-box;
+}
+
+.measure { max-inline-size: var(--measure); }
+.tnum { font-variant-numeric: tabular-nums; }
+.citation-quote {
+  font-family: var(--font-serif);
+  line-height: 1.65;
+  border-top: 1px solid var(--line-strong);
+  margin-top: 8px;
+  padding-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 200ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 200ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .toolbar-material, .popover-material {
+    background: var(--surface) !important;
+    backdrop-filter: none !important;
+  }
+}
+
+.toolbar-material {
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  backdrop-filter: blur(16px) saturate(140%);
+}
