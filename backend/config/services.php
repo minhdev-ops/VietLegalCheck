@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    // Dịch vụ nội bộ Python (SRS 6.4, docs/INTERNAL-SERVICE-CONTRACT.md)
+    'ai' => [
+        'url' => env('AI_SERVICE_URL', 'http://ai:8100'),
+        'key' => env('AI_SERVICE_KEY', 'dev-internal-key-change-me'),
+        'provider_url' => env('AI_PROVIDER_URL', ''),
+        'provider_key' => env('AI_PROVIDER_KEY', ''),
+        'provider_model' => env('AI_PROVIDER_MODEL', 'gpt-4o-mini'),
+        'scan_max_pages' => env('AI_SCAN_MAX_PAGES', 15),
+        'scan_max_bytes' => env('AI_SCAN_MAX_BYTES', 3000000),
+        'scan_timeout' => env('AI_SCAN_TIMEOUT', 20),
+        'clamav_enabled' => env('CLAMAV_ENABLED', false),
+    ],
 ];

@@ -2,18 +2,30 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Cổng API phản hồi đúng (SRS 6.2): envelope JSON lỗi + request_id.
+ */
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_api_root_responds(): void
     {
-        $response = $this->get('/');
+        $response = $this->get('/api/v1/legal/documents');
 
-        $response->assertStatus(200);
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'data',
+            'as_of_date',
+            'meta' => ['page', 'last_page', 'total'],
+        ]);
+    }
+
+    public function test_api_errors_carry_request_id(): void
+    {
+        $response = $this->get('/api/v1/legal/documents/no-such-id');
+
+        $response->assertNotFound();
+        $response->assertJsonStructure(['error' => ['code', 'message', 'details', 'request_id']]);
     }
 }

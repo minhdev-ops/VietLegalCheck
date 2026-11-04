@@ -29,7 +29,7 @@ function onInput(event: Event): void {
       :aria-invalid="props.error ? 'true' : undefined"
       :class="cn(
         'h-9 w-full rounded-md border border-line-strong bg-surface px-3 text-sm text-ink',
-        'placeholder:text-ink-faint',
+        'placeholder:text-ink-muted',
         'focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20',
         props.error && 'border-seal focus:border-seal focus:ring-seal/20',
       )"

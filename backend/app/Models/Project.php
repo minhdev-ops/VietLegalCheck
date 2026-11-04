@@ -45,6 +45,11 @@ class Project extends BaseModel
         return $this->hasMany(Scan::class)->latest();
     }
 
+    public function domainVerifications(): HasMany
+    {
+        return $this->hasMany(DomainVerification::class);
+    }
+
     public function procedures(): HasMany
     {
         return $this->hasMany(ProjectProcedure::class);
@@ -60,9 +65,9 @@ class Project extends BaseModel
         return $this->hasMany(Report::class)->latest();
     }
 
-    public function latestAssessment(): ?Assessment
+    public function latestAssessment(): HasOne
     {
-        return $this->assessments()->first();
+        return $this->hasOne(Assessment::class)->latestOfMany();
     }
 
     /** @return array<int, string> */

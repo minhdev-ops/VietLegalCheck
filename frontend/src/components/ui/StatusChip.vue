@@ -4,12 +4,8 @@ import {
   AlertTriangle,
   BadgeCheck,
   CircleHelp,
-  Eye,
   Info,
   Minus,
-  Scale,
-  ShieldCheck,
-  Sparkles,
   TriangleAlert,
 } from '@lucide/vue'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -56,12 +52,6 @@ const resolvedIcon = computed<Component>(() => {
   return props.icon ?? ICON_BY_TONE[(props.tone as string) ?? 'neutral'] ?? Minus
 })
 
-const MISC_ICONS: Record<string, Component> = {
-  SCALE: Scale,
-  SHIELD: ShieldCheck,
-  EYE: Eye,
-  AI: Sparkles,
-}
 </script>
 
 <template>

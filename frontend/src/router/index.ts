@@ -1,4 +1,3 @@
-<script setup lang="ts">
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 

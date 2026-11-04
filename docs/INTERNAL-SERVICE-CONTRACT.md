@@ -170,3 +170,9 @@ Quy tắc bắt buộc (SRS FR-AI-02, 03, 05, 06, 07, 08):
 
 Khi `stream=true`: `text/event-stream`, mỗi dòng `data: {"type":"delta","text":"…"}`, kết thúc bằng
 `data: {"type":"final","cited_source_ids":[],"refused":false,"model":"…","categories":{…}}`.
+
+## `POST /internal/probe`
+
+Kiểm tra trang chủ có chứa thẻ meta xác minh quyền sở hữu hay không (FR-SCAN-07).
+Body: `{"url": "https://example.vn/", "expect": "meta:<token>"}`. Phản hồi `{"found": true|false}`.
+Chỉ tải về tối đa 256 KB, áp dụng đúng các quy tắc an toàn của `/internal/scan`.

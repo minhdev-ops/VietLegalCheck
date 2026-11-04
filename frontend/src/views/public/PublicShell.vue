@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { RouterView, RouterLink } from 'vue-router'
 </script>
-
 <template>
   <div class="min-h-dvh bg-paper">
     <header class="border-b border-line bg-surface/80" style="backdrop-filter: blur(12px)">
@@ -25,7 +23,7 @@ import { RouterView, RouterLink } from 'vue-router'
       </div>
     </header>
     <main>
-      <RouterView />
+      <slot />
     </main>
     <footer class="border-t border-line bg-surface-2">
       <div class="mx-auto max-w-[1240px] px-4 py-8 text-[12.5px] text-ink-muted sm:px-6">

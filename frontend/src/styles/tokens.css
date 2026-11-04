@@ -13,8 +13,8 @@
   --color-accent: oklch(0.470 0.095 250);
   --color-accent-strong: oklch(0.390 0.110 250);
   --color-seal: oklch(0.500 0.160 27);
-  --color-ok: oklch(0.520 0.100 152);
-  --color-caution: oklch(0.620 0.130 75);
+  --color-ok: oklch(0.430 0.110 152);
+  --color-caution: oklch(0.520 0.135 75);
   --color-info: oklch(0.550 0.070 235);
   --color-expert: oklch(0.500 0.100 305);
 

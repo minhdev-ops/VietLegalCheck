@@ -7,6 +7,7 @@ enum LegalStatus: string
 {
     case DRAFT = 'DRAFT';
     case NOT_YET_EFFECTIVE = 'NOT_YET_EFFECTIVE';
+    case IN_EFFECT = 'IN_EFFECT';
     case EFFECTIVE = 'EFFECTIVE';
     case PARTIALLY_EFFECTIVE = 'PARTIALLY_EFFECTIVE';
     case AMENDED = 'AMENDED';
@@ -19,6 +20,7 @@ enum LegalStatus: string
         return match ($this) {
             self::DRAFT => 'Dự thảo',
             self::NOT_YET_EFFECTIVE => 'Chưa có hiệu lực',
+            self::IN_EFFECT => 'Đang có hiệu lực',
             self::EFFECTIVE => 'Đang có hiệu lực',
             self::PARTIALLY_EFFECTIVE => 'Có hiệu lực một phần',
             self::AMENDED => 'Đã được sửa đổi',
@@ -31,12 +33,13 @@ enum LegalStatus: string
     /** Trạng thái có thể làm căn cứ hiện hành tại một thời điểm (BR-06). */
     public function canBeCurrentBasis(): bool
     {
-        return in_array($this, [self::EFFECTIVE, self::PARTIALLY_EFFECTIVE], true);
+        return in_array($this, [self::IN_EFFECT, self::EFFECTIVE, self::PARTIALLY_EFFECTIVE], true);
     }
 
     public function tone(): string
     {
         return match ($this) {
+            self::IN_EFFECT => 'ok',
             self::EFFECTIVE => 'ok',
             self::PARTIALLY_EFFECTIVE => 'caution',
             self::NOT_YET_EFFECTIVE => 'info',

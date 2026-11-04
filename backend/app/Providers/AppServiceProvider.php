@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Domain\Support\RequestId;
+use App\Models\PersonalAccessToken;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        RequestId::register();
+
+        // PersonalAccessToken mặc định có id tăng dần — không hợp với UUID khóa chính.
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 }

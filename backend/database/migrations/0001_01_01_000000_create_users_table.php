@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('email_verification_token', 64)->nullable()->index();
             $table->string('password');
             $table->string('system_role', 32)->default('USER')->index();
             $table->text('two_factor_secret')->nullable();

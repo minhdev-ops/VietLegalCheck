@@ -2,24 +2,24 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * Thứ tự seed: văn bản → thẻ/câu hỏi/quy tắc → thủ tục → thiết lập → quản trị.
+ * Nội dung pháp lý là MẪU (SRS §14) — đánh dấu `source_note`/`last_verified_at` trung thực.
+ */
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            LegalDocumentSeeder::class,
+            ActivityTagSeeder::class,
+            QuestionSetSeeder::class,
+            RuleSeeder::class,
+            ProcedureSeeder::class,
+            SystemSettingSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
 }

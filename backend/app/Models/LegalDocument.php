@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Enums\LegalStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -49,5 +50,22 @@ class LegalDocument extends BaseModel
         $to = $this->effective_to?->format('Y-m-d');
 
         return ($from === null || $from <= $day) && ($to === null || $to >= $day);
+    }
+
+    /**
+     * Lọc văn bản có hiệu lực tại ngày pháp lý cho trước (BR-18).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     */
+    public function scopeEffectiveAt(Builder $query, \DateTimeInterface|string $date): Builder
+    {
+        $day = \Carbon\Carbon::parse($date)->toDateString();
+
+        return $query->where(fn (Builder $builder) => $builder
+            ->whereNull('effective_from')
+            ->orWhere('effective_from', '<=', $day))
+            ->where(fn (Builder $builder) => $builder
+                ->whereNull('effective_to')
+                ->orWhere('effective_to', '>=', $day));
     }
 }

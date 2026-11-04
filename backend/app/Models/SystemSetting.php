@@ -27,11 +27,14 @@ class SystemSetting extends BaseModel
         return is_array($value) && array_key_exists('v', $value) ? $value['v'] : $default;
     }
 
-    public static function put(string $key, mixed $value, ?string $description = null, ?string $actorId = null): void
+    public static function put(string $key, mixed $value, ?string $description = null, ?string $actorId = null): static
     {
-        static::updateOrCreate(
+        /** @var static $setting */
+        $setting = static::updateOrCreate(
             ['key' => $key],
             ['value' => ['v' => $value], 'description' => $description, 'updated_by' => $actorId, 'updated_at' => now()],
         );
+
+        return $setting;
     }
 }

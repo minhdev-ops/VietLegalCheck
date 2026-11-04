@@ -1,0 +1,28 @@
+# Dependencies
+backend/vendor
+frontend/node_modules
+services/ai/**/__pycache__
+services/ai/.venv
+services/ai/venv
+
+# Build artifacts
+frontend/dist
+backend/public/build
+
+# Runtime
+backend/.env
+*.log
+backend/storage/logs
+backend/storage/framework/cache
+backend/bootstrap/cache/*.php
+backend/.phpunit.cache
+backend/.phpunit.result.cache
+
+# Editors/OS
+.DS_Store
+.idea
+.vscode
+.fleet
+.nova
+.zed
+Thumbs.db

@@ -16,4 +16,9 @@ class AiConversation extends BaseModel
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

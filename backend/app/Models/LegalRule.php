@@ -23,4 +23,9 @@ class LegalRule extends BaseModel
     {
         return $this->belongsTo(LegalRuleVersion::class, 'current_version_id');
     }
+
+    public function latestVersion(): ?LegalRuleVersion
+    {
+        return $this->versions->first();
+    }
 }

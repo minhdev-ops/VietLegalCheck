@@ -73,9 +73,15 @@ return new class extends Migration
         });
 
         if (DB::getDriverName() === 'pgsql') {
-            // Tìm kiếm tiếng Việt có dấu/không dấu (SRS 6.1) mà không cần cột sinh sẵn.
-            DB::statement('CREATE INDEX legal_provisions_content_trgm ON legal_provisions USING gin (unaccent(lower(content)) gin_trgm_ops)');
-            DB::statement('CREATE INDEX legal_documents_title_trgm ON legal_documents USING gin (unaccent(lower(title)) gin_trgm_ops)');
+            // Tìm kiếm tiếng Việt có dấu/không dấu (SRS 6.1). `unaccent` gốc không IMMUTABLE
+            // nên Postgres từ chối lập chỉ mục biểu thức; bọc lại bằng hàm SQLimmutable.
+            DB::statement(<<<'SQL'
+                CREATE OR REPLACE FUNCTION public.vlc_unaccent(input text)
+                RETURNS text LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+                AS $$ SELECT public.unaccent('public.unaccent', $1) $$
+            SQL);
+            DB::statement('CREATE INDEX legal_provisions_content_trgm ON legal_provisions USING gin (vlc_unaccent(lower(content)) gin_trgm_ops)');
+            DB::statement('CREATE INDEX legal_documents_title_trgm ON legal_documents USING gin (vlc_unaccent(lower(title)) gin_trgm_ops)');
         }
     }
 

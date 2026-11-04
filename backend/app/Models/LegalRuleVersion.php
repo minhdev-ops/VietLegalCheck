@@ -31,7 +31,9 @@ class LegalRuleVersion extends BaseModel
 
     public function provisions(): BelongsToMany
     {
+        // Pivot UUID: BaseModel::HasUuids sinh id; pivot mặc định thì không.
         return $this->belongsToMany(LegalProvision::class, 'rule_provisions', 'rule_version_id', 'provision_id')
+            ->using(RuleProvision::class)
             ->withTimestamps();
     }
 

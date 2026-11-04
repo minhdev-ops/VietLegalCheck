@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Enums\LegalStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LegalProvision extends BaseModel
@@ -50,5 +51,22 @@ class LegalProvision extends BaseModel
     public function label(): string
     {
         return trim(implode(' ', array_filter([$this->article, $this->clause, $this->point]))) ?: ($this->heading ?? 'Điều khoản');
+    }
+
+    /**
+     * Lọc điều khoản có hiệu lực tại một ngày pháp lý (BR-18, BE-01).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     */
+    public function scopeEffectiveAt(Builder $query, \DateTimeInterface|string $date): Builder
+    {
+        $day = \Carbon\Carbon::parse($date)->toDateString();
+
+        return $query->where(fn (Builder $builder) => $builder
+            ->whereNull('effective_from')
+            ->orWhere('effective_from', '<=', $day))
+            ->where(fn (Builder $builder) => $builder
+                ->whereNull('effective_to')
+                ->orWhere('effective_to', '>=', $day));
     }
 }

@@ -7,6 +7,7 @@ enum RuleVersionStatus: string
     case DRAFT = 'DRAFT';
     case IN_REVIEW = 'IN_REVIEW';
     case APPROVED = 'APPROVED';
+    case REJECTED = 'REJECTED';
     case RETIRED = 'RETIRED';
 
     public function label(): string
@@ -15,6 +16,7 @@ enum RuleVersionStatus: string
             self::DRAFT => 'Bản nháp',
             self::IN_REVIEW => 'Chờ phê duyệt',
             self::APPROVED => 'Đã phát hành',
+            self::REJECTED => 'Bị từ chối',
             self::RETIRED => 'Ngừng áp dụng',
         };
     }
