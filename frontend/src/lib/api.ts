@@ -46,8 +46,8 @@ async function request<T>(method: string, path: string, body?: unknown, params?:
   const headers: Record<string, string> = { Accept: 'application/json' }
   const token = getToken()
   if (token) headers.Authorization = `Bearer ${token}`
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
 
+  if (body !== undefined) headers['Content-Type'] = 'application/json'
   let response: Response
   try {
     response = await fetch(url.toString(), {

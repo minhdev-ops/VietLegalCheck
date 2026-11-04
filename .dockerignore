@@ -7,7 +7,6 @@
 frontend/dist
 backend/public/build
 
-backend/.env
 **/*.log
 backend/storage/logs/*
 backend/bootstrap/cache/*.php

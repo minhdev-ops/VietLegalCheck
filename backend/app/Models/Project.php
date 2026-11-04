@@ -67,7 +67,7 @@ class Project extends BaseModel
 
     public function latestAssessment(): HasOne
     {
-        return $this->hasOne(Assessment::class)->latestOfMany();
+        return $this->hasOne(Assessment::class)->latest('created_at');
     }
 
     /** @return array<int, string> */
