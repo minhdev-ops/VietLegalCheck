@@ -98,7 +98,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2023-07-01',
                     'effective_to' => '2026-06-30',
-                    'provision_doc_numbers' => ['13/2023/NĐ-CP'],
+                    'provision_doc_numbers' => ['14/2025/NĐ-CP'],
                     'test_cases' => [
                         ['name' => 'Bán hàng online', 'facts' => ['sells_online' => true], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Không bán hàng online', 'facts' => ['sells_online' => false], 'expected_applicability' => 'NOT_APPLICABLE'],

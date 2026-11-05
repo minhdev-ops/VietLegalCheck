@@ -33,8 +33,4 @@ class DocumentFile extends BaseModel
         return $this->belongsTo(User::class, 'uploaded_by');
     }
 
-    public function isClean(): bool
-    {
-        return $this->scan_status === 'CLEAN';
-    }
 }

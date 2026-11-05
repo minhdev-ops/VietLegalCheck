@@ -116,6 +116,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=280", "--queue=high,default"]
+    user: www-data
     environment:
       <<: *app-env
     depends_on:
@@ -129,6 +130,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     command: ["php", "artisan", "schedule:work"]
+    user: www-data
     environment:
       <<: *app-env
     depends_on:

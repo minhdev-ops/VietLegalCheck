@@ -546,7 +546,26 @@ class LegalDocumentSeeder extends Seeder
             'source_type' => 'PRIMARY',
             'source_note' => 'Kiểm chứng văn bản gốc.',
             'last_verified_at' => '2026-06-30 00:00:00',
-            'provisions' => [],
+            'provisions' => [
+                [
+                    'article' => 'Điều 11',
+                    'heading' => 'Bảo đảm an toàn dữ liệu',
+                    'content' => 'Tổ chức, cá nhân xây dựng, phát triển, bảo vệ, quản trị, xử lý, sử dụng dữ liệu phải thực hiện quản lý, kiểm tra, giám sát an toàn dữ liệu, bảo mật dữ liệu thường xuyên; phòng ngừa, ngăn chặn và xử lý rủi ro dữ liệu.',
+                    'effective_from' => '2025-01-01',
+                    'effective_to' => null,
+                    'status' => 'EFFECTIVE',
+                    'position' => 1,
+                ],
+                [
+                    'article' => 'Điều 12',
+                    'heading' => 'Xử lý dữ liệu',
+                    'content' => 'Việc xử lý dữ liệu phải tuân thủ quy định của pháp luật có liên quan, bảo đảm đúng mục đích, minh bạch và chịu trách nhiệm về dữ liệu được xử lý.',
+                    'effective_from' => '2025-01-01',
+                    'effective_to' => null,
+                    'status' => 'EFFECTIVE',
+                    'position' => 2,
+                ],
+            ],
         ],
         [
             'doc_number' => '71/2025/QH15',
@@ -561,7 +580,17 @@ class LegalDocumentSeeder extends Seeder
             'source_type' => 'PRIMARY',
             'source_note' => 'Kiểm chứng văn bản gốc.',
             'last_verified_at' => '2026-06-30 00:00:00',
-            'provisions' => [],
+            'provisions' => [
+                [
+                    'article' => 'Điều 8',
+                    'heading' => 'Phát triển công nghiệp công nghệ số',
+                    'content' => 'Nhà nước khuyến khích tổ chức, cá nhân đầu tư nghiên cứu, phát triển, ứng dụng công nghệ số và tạo ra sản phẩm, dịch vụ công nghệ số có giá trị gia tăng.',
+                    'effective_from' => '2026-01-01',
+                    'effective_to' => null,
+                    'status' => 'EFFECTIVE',
+                    'position' => 1,
+                ],
+            ],
         ],
         [
             'doc_number' => '134/2025/QH15',
@@ -576,7 +605,26 @@ class LegalDocumentSeeder extends Seeder
             'source_type' => 'PRIMARY',
             'source_note' => 'Kiểm chứng văn bản gốc.',
             'last_verified_at' => '2026-06-30 00:00:00',
-            'provisions' => [],
+            'provisions' => [
+                [
+                    'article' => 'Điều 5',
+                    'heading' => 'Nguyên tắc phát triển và ứng dụng trí tuệ nhân tạo',
+                    'content' => 'Phát triển và ứng dụng trí tuệ nhân tạo phải bảo đảm quyền con người, tuân thủ pháp luật, minh bạch, có trách nhiệm và không gây nguy hại đến đời sống, sức khỏe, tài sản của con người.',
+                    'effective_from' => '2026-03-01',
+                    'effective_to' => null,
+                    'status' => 'EFFECTIVE',
+                    'position' => 1,
+                ],
+                [
+                    'article' => 'Điều 9',
+                    'heading' => 'Thu thập, xử lý dữ liệu cho hệ thống trí tuệ nhân tạo',
+                    'content' => 'Tổ chức, cá nhân thu thập, xử lý hoặc sử dụng dữ liệu để phát triển, huấn luyện, kiểm thử hoặc vận hành hệ thống trí tuệ nhân tạo phải tuân thủ pháp luật về dữ liệu, bảo vệ dữ liệu cá nhân và sở hữu trí tuệ.',
+                    'effective_from' => '2026-03-01',
+                    'effective_to' => null,
+                    'status' => 'EFFECTIVE',
+                    'position' => 2,
+                ],
+            ],
         ],
     ];
 }

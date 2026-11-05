@@ -62,6 +62,7 @@ final class ReportService
                 'organization_id' => $assessment->project->organization_id,
                 'status' => 'COMPLETED',
                 'as_of_date' => $assessment->as_of_date,
+                'rule_set_snapshot' => $assessment->rule_set_snapshot ?? [],
                 'sha256' => $sha,
                 'pdf_path' => $key,
                 'generated_by' => auth()->id(),

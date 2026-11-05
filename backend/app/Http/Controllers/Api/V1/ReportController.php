@@ -30,7 +30,7 @@ class ReportController extends ApiController
 
     public function store(Request $request, Project $project, Assessment $assessment): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         abort_unless($assessment->project_id === $project->id, 404);
         abort_unless($assessment->status === 'COMPLETED', 422, 'Đánh giá chưa hoàn thành.');
 
@@ -68,5 +68,15 @@ class ReportController extends ApiController
             'Content-Type' => 'application/pdf',
             'X-Report-Hash' => (string) $report->sha256,
         ]);
+    }
+
+    private function guard(Project $project, bool $requireWrite = false): void
+    {
+        $user = request()->user();
+        $membership = $user->memberships()->where('organization_id', $project->organization_id)->first();
+        abort_unless($membership, 403, 'Không thuộc tổ chức của dự án này.');
+
+        // FR-AUTH-03 / SRS 2.2: VIEWER chỉ xem; thao tác ghi cần MEMBER trở lên.
+        abort_if($requireWrite && ! $membership->role->canWrite(), 403, 'Cần quyền thành viên được phép chỉnh sửa trong tổ chức.');
     }
 }
