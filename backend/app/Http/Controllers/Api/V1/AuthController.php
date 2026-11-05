@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\V1;
 use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\TotpService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
@@ -95,13 +97,21 @@ class AuthController extends ApiController
 
         if ($user->requiresTwoFactor() && ! $user->hasTwoFactorEnabled()) {
             // Tài khoản quản trị/nội bộ chưa bật 2FA: yêu cầu thiết lập trước (FR-AUTH-04).
-            $secret = $this->totp->generateSecret();
-            $user->update(['two_factor_secret' => $secret]);
+            // Giữ lại secret đã tạo (chưa xác nhận) để người dùng không phải quét lại;
+            // cấp token tạm thời duy nhất quyền thiết lập 2FA thay vì phiên đăng nhập.
+            if (! $user->two_factor_secret) {
+                $user->update(['two_factor_secret' => $this->totp->generateSecret()]);
+                $user->refresh();
+            }
+
+            $setupToken = $user->createToken('2fa-setup', ['setup-2fa'], now()->addMinutes(15))->plainTextToken;
 
             return $this->ok([
                 'requires_two_factor_setup' => true,
-                'secret' => $secret,
-                'otpauth' => $this->totp->otpauthUri($user->email, $secret),
+                'setup_token' => $setupToken,
+                'email' => $user->email,
+                'secret' => $user->two_factor_secret,
+                'otpauth' => $this->totp->otpauthUri($user->email, $user->two_factor_secret),
             ]);
         }
 
@@ -130,6 +140,13 @@ class AuthController extends ApiController
     public function enableTwoFactor(Request $request): JsonResponse
     {
         $user = $request->user();
+        // Cho phép người dùng tự bật, hoặc hoàn tất thiết lập bắt buộc bằng token tạm
+        // chỉ có quyền 'setup-2fa' (FR-AUTH-04).
+        abort_unless(
+            $user->requiresTwoFactor() || $user->hasTwoFactorEnabled() === false || $user->tokenCan('setup-2fa') || $user->isSystemAdmin(),
+            403,
+            'Không cần thiết lập xác thực hai bước lúc này.',
+        );
         $data = $request->validate(['code' => ['required', 'string', 'size:6']]);
 
         if (! $user->two_factor_secret || ! $this->totp->verify((string) $user->two_factor_secret, (string) $data['code'])) {
@@ -141,6 +158,11 @@ class AuthController extends ApiController
             'two_factor_recovery_codes' => $this->totp->recoveryCodes(),
         ]);
         $this->audit->log('USER_2FA_ENABLED', $user);
+
+        // Token thiết lập tạm thời chỉ dùng một lần (FR-AUTH-04).
+        if ($user->tokenCan('setup-2fa')) {
+            $user->currentAccessToken()?->delete();
+        }
 
         return $this->ok(['recovery_codes' => $user->two_factor_recovery_codes]);
     }
@@ -184,6 +206,63 @@ class AuthController extends ApiController
                 'is_personal' => $org->is_personal,
             ]),
         ];
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate(['email' => ['required', 'email', 'max:150']]);
+        $user = User::where('email', $data['email'])->first();
+
+        // Tránh rò rỉ tài khoản tồn tại; luôn trả 200 (OWASP).
+        if ($user) {
+            $token = str()->random(48);
+            DB::table('password_reset_tokens')->updateOrInsert(
+                ['email' => $user->email],
+                ['token' => $token, 'created_at' => now()],
+            );
+            Mail::raw(
+                'Đặt lại mật khẩu VietLegal Check. Token: '.$token,
+                fn ($message) => $message->to($user->email)->subject('Đặt lại mật khẩu'),
+            );
+            $this->audit->log('PASSWORD_RESET_REQUESTED', $user, ['email' => $user->email]);
+        }
+
+        return $this->ok(['sent' => true]);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'max:150'],
+            'token' => ['required', 'string', 'max:100'],
+            'password' => ['required', 'string', 'min:10', 'max:72', 'confirmed'],
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $data['email'])->first();
+        $valid = $record !== null
+            && hash_equals((string) $record->token, $data['token'])
+            && Carbon::parse($record->created_at)->addMinutes(60)->isFuture();
+
+        abort_unless($valid, 422, 'Token đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.');
+
+        $user = User::where('email', $data['email'])->firstOrFail();
+        $user->update(['password' => Hash::make($data['password']), 'locked_until' => null, 'failed_login_attempts' => 0]);
+        DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+        $this->audit->log('PASSWORD_RESET', $user);
+
+        return $this->ok();
+    }
+
+    public function verifyEmail(Request $request): JsonResponse
+    {
+        $data = $request->validate(['token' => ['required', 'string', 'max:100']]);
+        $user = User::where('email_verification_token', $data['token'])->first();
+        abort_unless($user !== null, 422, 'Token xác nhận email không hợp lệ.');
+
+        $user->forceFill(['email_verified_at' => now(), 'email_verification_token' => null])->save();
+        $this->audit->log('EMAIL_VERIFIED', $user);
+
+        return $this->ok(['verified' => true]);
     }
 
     private function registerFailure(Request $request, ?User $user): void

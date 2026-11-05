@@ -98,7 +98,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2023-07-01',
                     'effective_to' => '2026-06-30',
-                    'provision_doc_numbers' => ['ND-CP-13-2023'],
+                    'provision_doc_numbers' => ['13/2023/NĐ-CP'],
                     'test_cases' => [
                         ['name' => 'Bán hàng online', 'facts' => ['sells_online' => true], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Không bán hàng online', 'facts' => ['sells_online' => false], 'expected_applicability' => 'NOT_APPLICABLE'],
@@ -117,7 +117,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2026-07-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BVDS-2023'],
+                    'provision_doc_numbers' => ['91/2025/QH15'],
                     'test_cases' => [
                         ['name' => 'Bán hàng online', 'facts' => ['sells_online' => true], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Không bán hàng online', 'facts' => ['sells_online' => false], 'expected_applicability' => 'NOT_APPLICABLE'],
@@ -151,7 +151,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2024-07-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BVDS-2023'],
+                    'provision_doc_numbers' => ['91/2025/QH15'],
                     'test_cases' => [
                         ['name' => 'Dữ liệu nhạy cảm', 'facts' => ['processes_sensitive_data' => true], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Dữ liệu y tế', 'facts' => ['processes_health_data' => true, 'processes_sensitive_data' => false], 'expected_applicability' => 'APPLICABLE'],
@@ -180,7 +180,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2024-07-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BVDS-2023'],
+                    'provision_doc_numbers' => ['91/2025/QH15'],
                     'test_cases' => [
                         ['name' => 'Có bán hàng', 'facts' => ['sells_online' => true], 'expected_applicability' => 'APPLICABLE'],
                     ],
@@ -207,7 +207,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2023-06-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BCQT-2018', 'TT-BTTTT-03-2023'],
+                    'provision_doc_numbers' => ['116/2025/QH15', '03/2023/TT-BTTTT'],
                     'test_cases' => [
                         ['name' => 'Có nội dung người dùng', 'facts' => ['allows_user_content' => true], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Không có', 'facts' => ['allows_user_content' => false], 'expected_applicability' => 'NOT_APPLICABLE'],
@@ -241,7 +241,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2019-01-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BCQT-2018'],
+                    'provision_doc_numbers' => ['116/2025/QH15'],
                     'test_cases' => [
                         ['name' => 'Chỉ bán hàng', 'facts' => ['sells_online' => true, 'allows_user_content' => false], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Không hoạt động', 'facts' => ['sells_online' => false, 'allows_user_content' => false], 'expected_applicability' => 'NOT_APPLICABLE'],
@@ -304,7 +304,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2019-01-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BCQT-2018'],
+                    'provision_doc_numbers' => ['116/2025/QH15'],
                     'test_cases' => [],
                 ],
             ],
@@ -329,7 +329,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2024-01-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-TMDT-2023'],
+                    'provision_doc_numbers' => ['122/2025/QH15'],
                     'test_cases' => [
                         ['name' => 'Xử lý thanh toán', 'facts' => ['handles_payments' => true], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Không thanh toán', 'facts' => ['handles_payments' => false], 'expected_applicability' => 'NOT_APPLICABLE'],
@@ -389,7 +389,7 @@ class RuleSeeder extends Seeder
                     'status' => 'APPROVED',
                     'effective_from' => '2024-01-01',
                     'effective_to' => null,
-                    'provision_doc_numbers' => ['LUAT-BVDS-2023'],
+                    'provision_doc_numbers' => ['91/2025/QH15'],
                     'test_cases' => [
                         ['name' => 'Có thị trường', 'facts' => ['markets' => ['EU']], 'expected_applicability' => 'APPLICABLE'],
                         ['name' => 'Chưa khai báo', 'facts' => [], 'expected_applicability' => 'NEED_MORE_INFO'],

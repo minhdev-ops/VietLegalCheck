@@ -120,6 +120,10 @@ def source_reference(source: Source) -> str:
     location = ", ".join(part for part in (source.article, source.clause, source.point) if part)
     if location:
         head = f"{head}, {location}" if head else location
+    # FR-AI-03: dẫn cả nguồn chính thức khi có (AC-12).
+    url = _collapse(source.official_url)
+    if url:
+        head = f"{head}, nguồn: {url}" if head else url
     return head or f"nguồn {source.id}"
 
 

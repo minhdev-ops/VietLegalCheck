@@ -31,7 +31,7 @@ class AssessmentController extends ApiController
 
     public function store(Request $request, Project $project): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
 
         $data = $request->validate([
             'as_of_date' => ['nullable', 'date'],
@@ -76,7 +76,7 @@ class AssessmentController extends ApiController
 
     public function updateFinding(Request $request, Project $project, Assessment $assessment, AssessmentFinding $finding): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         abort_unless($finding->assessment_id === $assessment->id, 404);
 
         $data = $request->validate([
@@ -93,7 +93,7 @@ class AssessmentController extends ApiController
     /** Chạy đồng bộ (dùng cho test và cho dự án nhỏ) — vẫn ghi findings đầy đủ. */
     public function run(Project $project, Assessment $assessment): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
 
         $profile = $project->profile;
         abort_unless($profile?->answers, 422, 'Chưa có hồ sơ dự án. Hoàn thành bảng khai báo trước.');
@@ -157,9 +157,13 @@ class AssessmentController extends ApiController
         return 'COMPLIANT';
     }
 
-    private function guard(Project $project): void
+    private function guard(Project $project, bool $requireWrite = false): void
     {
         $user = request()->user();
-        abort_unless($user->memberships()->where('organization_id', $project->organization_id)->exists(), 403);
+        $membership = $user->memberships()->where('organization_id', $project->organization_id)->first();
+        abort_unless($membership, 403, 'Không thuộc tổ chức của dự án này.');
+
+        // FR-AUTH-03 / SRS 2.2: VIEWER chỉ xem; thao tác ghi cần MEMBER trở lên.
+        abort_if($requireWrite && ! $membership->role->canWrite(), 403, 'Cần quyền thành viên được phép chỉnh sửa trong tổ chức.');
     }
 }

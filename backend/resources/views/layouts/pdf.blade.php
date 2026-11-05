@@ -10,6 +10,7 @@
     .meta { width: 100%; margin-top: 24pt; }
     .meta td { padding: 4pt 0; border-bottom: 0.5pt solid #ccc; }
     .note { background: #f4f1ea; padding: 10pt; border: 0.5pt solid #c8c2b6; margin: 16pt 0; font-size: 9.5pt; }
+    .hash { font-family: monospace; font-size: 7.5pt; color: #555; word-break: break-all; margin-top: 18pt; }
     h2 { font-size: 14pt; border-bottom: 1pt solid #333; padding-bottom: 4pt; margin-top: 18pt; }
     h3 { font-size: 12pt; margin-bottom: 4pt; }
     .chip { font-size: 9pt; color: #555; }

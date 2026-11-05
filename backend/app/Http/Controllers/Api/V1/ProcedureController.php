@@ -42,7 +42,7 @@ class ProcedureController extends ApiController
 
     public function storeTracked(Request $request, Project $project): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         $data = $request->validate([
             'procedure_id' => ['required', 'uuid', 'exists:administrative_procedures,id'],
             'notes' => ['nullable', 'string', 'max:1000'],
@@ -60,7 +60,7 @@ class ProcedureController extends ApiController
 
     public function updateTracked(Request $request, Project $project, ProjectProcedure $tracked): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         abort_unless($tracked->project_id === $project->id, 404);
 
         $data = $request->validate([
@@ -76,9 +76,13 @@ class ProcedureController extends ApiController
         return $this->ok(['tracked' => $tracked->fresh(['procedure', 'documents'])]);
     }
 
-    private function guard(Project $project): void
+    private function guard(Project $project, bool $requireWrite = false): void
     {
         $user = request()->user();
-        abort_unless($user->memberships()->where('organization_id', $project->organization_id)->exists(), 403);
+        $membership = $user->memberships()->where('organization_id', $project->organization_id)->first();
+        abort_unless($membership, 403, 'Không thuộc tổ chức của dự án này.');
+
+        // FR-AUTH-03 / SRS 2.2: VIEWER chỉ xem; thao tác ghi cần MEMBER trở lên.
+        abort_if($requireWrite && ! $membership->role->canWrite(), 403, 'Cần quyền thành viên được phép chỉnh sửa trong tổ chức.');
     }
 }

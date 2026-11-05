@@ -37,7 +37,7 @@ class ProjectController extends ApiController
 
     public function store(Request $request): JsonResponse
     {
-        $organization = $this->organization($request);
+        $organization = $this->organization($request, requireWrite: true);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:2000'],
@@ -70,7 +70,7 @@ class ProjectController extends ApiController
 
     public function update(Request $request, Project $project): JsonResponse
     {
-        $this->authorizeProject($project);
+        $this->authorizeProject($project, requireWrite: true);
         $data = $request->validate([
             'name' => ['sometimes', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:2000'],
@@ -90,14 +90,14 @@ class ProjectController extends ApiController
 
     public function destroy(Project $project): JsonResponse
     {
-        $this->authorizeProject($project);
+        $this->authorizeProject($project, requireWrite: true);
         $project->delete();
         $this->audit->log('PROJECT_DELETED', $project);
 
         return $this->ok();
     }
 
-    private function organization(Request $request): Organization
+    private function organization(Request $request, bool $requireWrite = false): Organization
     {
         $organizationId = (string) $request->header('X-Organization-Id', '');
         $user = $request->user();
@@ -107,6 +107,7 @@ class ProjectController extends ApiController
             if (! $membership) {
                 abort(403, 'Bạn không thuộc tổ chức này.');
             }
+            abort_if($requireWrite && ! $membership->role->canWrite(), 403, 'Cần quyền thành viên được phép tạo dự án trong tổ chức.');
 
             return $membership->organization;
         }
@@ -119,13 +120,18 @@ class ProjectController extends ApiController
         return $organization;
     }
 
-    private function authorizeProject(Project $project): void
+    private function authorizeProject(Project $project, bool $requireWrite = false): void
     {
         $user = request()->user();
         $member = $user->memberships()->where('organization_id', $project->organization_id)->first();
 
         if (! $member) {
             abort(403, 'Không có quyền truy cập dự án này.');
+        }
+
+        // FR-AUTH-03 / SRS 2.2: VIEWER chỉ xem; sửa/xóa dự án cần MEMBER trở lên.
+        if ($requireWrite && ! $member->role->canWrite()) {
+            abort(403, 'Cần quyền thành viên được phép chỉnh sửa trong tổ chức.');
         }
     }
 }

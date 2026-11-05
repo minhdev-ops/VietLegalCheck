@@ -27,9 +27,11 @@ $application = Application::configure(basePath: dirname(__DIR__))
             }
 
             // ValidationException không có getStatusCode — phải bắt trước khi rơi vào 500.
-            $status = $e instanceof \Illuminate\Validation\ValidationException
-                ? 422
-                : (method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500);
+            $status = match (true) {
+                $e instanceof \Illuminate\Validation\ValidationException => 422,
+                $e instanceof \Illuminate\Auth\AuthenticationException => 401,
+                default => method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500,
+            };
             $code = match (true) {
                 $e instanceof \Illuminate\Validation\ValidationException => 'VALIDATION_ERROR',
                 $e instanceof NotFoundHttpException => 'NOT_FOUND',

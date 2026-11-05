@@ -58,7 +58,7 @@ class AssessmentFlowTest extends TestCase
         $this->assertNotNull($applicable, 'Có finding cho R-DATA-01');
         $this->assertSame(Applicability::APPLICABLE, $applicable->applicability);
         $this->assertNotEmpty($applicable->legal_basis, 'Căn cứ điều khoản phải đi kèm');
-        $this->assertSame('LUAT-BVDS-2023', $applicable->legal_basis[0]['document_number']);
+        $this->assertSame('91/2025/QH15', $applicable->legal_basis[0]['document_number']);
     }
 
     public function test_missing_answer_produces_need_more_info(): void
@@ -136,7 +136,7 @@ class AssessmentFlowTest extends TestCase
     private function seedRules(): void
     {
         $document = LegalDocument::create([
-            'doc_number' => 'LUAT-BVDS-2023',
+            'doc_number' => '91/2025/QH15',
             'title' => 'Luật Bảo vệ dữ liệu cá nhân 2023',
             'doc_type' => 'LUAT',
             'effective_from' => '2024-07-01',
@@ -154,7 +154,7 @@ class AssessmentFlowTest extends TestCase
         ]);
 
         $expired = LegalDocument::create([
-            'doc_number' => 'ND-CP-13-2023',
+            'doc_number' => '13/2023/NĐ-CP',
             'title' => 'Nghị định 13/2023',
             'doc_type' => 'NGHI_DINH',
             'effective_from' => '2023-07-01',

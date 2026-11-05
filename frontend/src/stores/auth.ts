@@ -33,12 +33,30 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async login(email: string, password: string, twoFactorCode?: string): Promise<SystemUser> {
-      const payload = await api.post<{ token: string; user: SystemUser }>('/auth/login', {
+      const payload = await api.post<{
+        token: string
+        user: SystemUser
+        requires_two_factor_setup?: boolean
+        setup_token?: string
+        secret?: string
+        otpauth?: string
+      }>('/auth/login', {
         email,
         password,
         two_factor_code: twoFactorCode,
         device_name: navigator.userAgent.slice(0, 120),
       })
+
+      // FR-AUTH-04: tài khoản quản trị chưa bật 2FA thì trả về yêu cầu thiết lập.
+      if (payload.requires_two_factor_setup && payload.setup_token) {
+        return {
+          requires_two_factor_setup: true,
+          setup_token: payload.setup_token,
+          secret: payload.secret,
+          otpauth: payload.otpauth,
+        } as unknown as SystemUser
+      }
+
       setToken(payload.token)
       this.user = payload.user
       return payload.user
@@ -52,6 +70,12 @@ export const useAuthStore = defineStore('auth', {
     }): Promise<void> {
       await api.post('/auth/register', input)
     },
+    // Hoàn tất thiết lập 2FA bắt buộc với token tạm thời chỉ có quyền setup-2fa.
+    async completeTwoFactorSetup(code: string): Promise<void> {
+      await api.post('/auth/2fa/enable', { code })
+      setToken(null)
+    },
+
     async logout(): Promise<void> {
       try {
         await api.post('/auth/logout')

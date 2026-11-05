@@ -47,6 +47,14 @@ return [
             'report' => false,
         ],
 
+        // FR-DOC-07 / FR-SCAN-05: tài liệu riêng tư và bản chụp bằng chứng quét.
+        // Không nằm trong disk public; liên kết tải có thời hạn và kiểm quyền.
+        'private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private'),
+            'throw' => true,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

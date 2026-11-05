@@ -22,7 +22,7 @@ class DocumentController extends ApiController
 
     public function store(Request $request, Project $project): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
 
         $data = $request->validate([
             'file' => ['required', 'file', 'max:20480'],
@@ -51,7 +51,7 @@ class DocumentController extends ApiController
 
     public function destroy(Project $project, string $fileId): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         $file = $project->files()->where('id', $fileId)->firstOrFail();
         $this->documents->delete($file);
         $this->audit->log('DOCUMENT_DELETED', $file);
@@ -59,9 +59,13 @@ class DocumentController extends ApiController
         return $this->ok();
     }
 
-    private function guard(Project $project): void
+    private function guard(Project $project, bool $requireWrite = false): void
     {
         $user = request()->user();
-        abort_unless($user->memberships()->where('organization_id', $project->organization_id)->exists(), 403);
+        $membership = $user->memberships()->where('organization_id', $project->organization_id)->first();
+        abort_unless($membership, 403, 'Không thuộc tổ chức của dự án này.');
+
+        // FR-AUTH-03 / SRS 2.2: VIEWER chỉ xem; thao tác ghi cần MEMBER trở lên.
+        abort_if($requireWrite && ! $membership->role->canWrite(), 403, 'Cần quyền thành viên được phép chỉnh sửa trong tổ chức.');
     }
 }

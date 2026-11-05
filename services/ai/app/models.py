@@ -123,3 +123,14 @@ class AnswerResponse(BaseModel):
     refusal_reason: Optional[str] = None
     model: str = "extractive"
     categories: Categories = Field(default_factory=Categories)
+
+class ProbeRequest(BaseModel):
+    """Yêu cầu kiểm tra thẻ meta xác minh sở hữu (FR-SCAN-07)."""
+
+    url: str = Field(min_length=1, max_length=2048)
+    expect: str = Field(min_length=5, max_length=128)
+
+class ProbeResponse(BaseModel):
+    found: bool
+    status: Optional[int] = None
+    fetch_error: Optional[str] = None

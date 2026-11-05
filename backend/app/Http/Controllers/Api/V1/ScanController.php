@@ -24,7 +24,7 @@ class ScanController extends ApiController
 
     public function store(Request $request, Project $project): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         $data = $request->validate([
             'url' => ['required', 'url:http,https', 'max:500'],
             'mode' => ['nullable', Rule::in(['LIGHT', 'DEEP'])],
@@ -47,7 +47,7 @@ class ScanController extends ApiController
 
     public function cancel(Project $project, Scan $scan): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         abort_unless($scan->project_id === $project->id, 404);
         abort_if($scan->status === 'COMPLETED', 422, 'Lần quét đã kết thúc.');
 
@@ -59,7 +59,7 @@ class ScanController extends ApiController
 
     public function verifyDomain(Request $request, Project $project): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         $data = $request->validate([
             'domain' => ['required', 'string', 'max:253'],
             'method' => ['nullable', Rule::in(['META_TAG', 'DNS_TXT'])],
@@ -76,7 +76,7 @@ class ScanController extends ApiController
 
     public function checkDomain(Project $project, string $domain): JsonResponse
     {
-        $this->guard($project);
+        $this->guard($project, requireWrite: true);
         $verification = $project->domainVerifications()->where('domain', strtolower($domain))->firstOrFail();
 
         $verified = $this->scans->checkVerification($verification);
@@ -84,9 +84,13 @@ class ScanController extends ApiController
         return $this->ok(['verification' => $verification->fresh(), 'verified' => $verified]);
     }
 
-    private function guard(Project $project): void
+    private function guard(Project $project, bool $requireWrite = false): void
     {
         $user = request()->user();
-        abort_unless($user->memberships()->where('organization_id', $project->organization_id)->exists(), 403);
+        $membership = $user->memberships()->where('organization_id', $project->organization_id)->first();
+        abort_unless($membership, 403, 'Không thuộc tổ chức của dự án này.');
+
+        // FR-AUTH-03 / SRS 2.2: VIEWER chỉ xem; thao tác ghi cần MEMBER trở lên.
+        abort_if($requireWrite && ! $membership->role->canWrite(), 403, 'Cần quyền thành viên được phép chỉnh sửa trong tổ chức.');
     }
 }

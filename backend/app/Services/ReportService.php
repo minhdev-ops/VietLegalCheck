@@ -33,6 +33,12 @@ final class ReportService
             'findings' => $findings,
             'as_of_date' => Carbon::parse($assessment->as_of_date)->format('d/m/Y'),
             'generated_at' => now()->format('H:i:s d/m/Y'),
+            'rule_set_snapshot' => $assessment->rule_set_snapshot ?? [],
+            // Mã băm của snapshot bộ quy tắc: cố định và không tự tham chiếu file PDF
+            // (không thể in hash của chính file đang tạo). Hash file PDF nằm trong DB
+            // và header tải về (FR-REPORT-06/AC-26).
+            'rule_set_hash' => hash('sha256', json_encode($assessment->rule_set_snapshot ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)),
+            'question_set_version' => (int) ($assessment->question_set_version ?? 1),
         ])
             ->setPaper('a4')
             ->setOption('isRemoteEnabled', false);
@@ -58,7 +64,7 @@ final class ReportService
                 'as_of_date' => $assessment->as_of_date,
                 'sha256' => $sha,
                 'pdf_path' => $key,
-                                                'generated_by' => auth()->id(),
+                'generated_by' => auth()->id(),
             ],
         );
     }

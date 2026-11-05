@@ -17,8 +17,8 @@ from pydantic import ValidationError
 
 from .ai import answer_question, provider_settings, sse_events
 from .auth import require_signature
-from .models import AnswerRequest, ScanRequest, ScanResponse
-from .scan import request_cancel, run_scan
+from .models import AnswerRequest, ProbeRequest, ProbeResponse, ScanRequest, ScanResponse
+from .scan import Fetcher, FetchFailure, request_cancel, run_scan
 
 SERVICE_VERSION = "1"
 SCAN_WALL_SECONDS = 275.0
@@ -142,6 +142,50 @@ def _host_only(url: str) -> str:
         return (urlsplit(url).hostname or "")[:253]
     except ValueError:
         return ""
+
+
+@app.post("/internal/probe", response_model=ProbeResponse)
+async def internal_probe(request: Request, body: bytes = Depends(require_signature)) -> ProbeResponse:
+    """Kiểm tra trang chủ có thẻ meta xác minh quyền sở hữu (FR-SCAN-07).
+
+    Chỉ fetch một trang với budget 256 KB và đầy đủ bảo mật SSRF của Fetcher.
+    Nội dung trang là dữ liệu không đáng tin; chỉ trích xuất meta tag.
+    """
+    payload: ProbeRequest = _parse_body(body, ProbeRequest)
+    expect = payload.expect.removeprefix("meta:").strip()
+    transport = request.app.state.scan_transport
+    fetcher = Fetcher(transport=transport, max_bytes=262_144)
+    try:
+        try:
+            result = await fetcher.fetch(payload.url, max_bytes=262_144)
+        except Exception as exc:  # BlockedURL, FetchFailure, network
+            code = getattr(exc, "code", None) or getattr(exc, "reason", None) or type(exc).__name__
+            log.info("probe blocked url=%s reason=%s", _host_only(payload.url), str(code)[:64])
+            return ProbeResponse(found=False, fetch_error=str(code)[:64])
+        if result.error:
+            return ProbeResponse(found=False, status=result.status, fetch_error=result.error)
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(result.body, "html.parser")
+        head = soup.find("head") or soup
+        found = False
+        for meta in head.find_all("meta"):
+            name = (meta.get("name") or meta.get("property") or "").strip().lower()
+            content = (meta.get("content") or "").strip()
+            if name in ("vietlegal-verification", "vlc-domain-verification") and content == expect:
+                found = True
+                break
+        if not found and head is not soup:
+            for meta in soup.find_all("meta"):
+                name = (meta.get("name") or meta.get("property") or "").strip().lower()
+                content = (meta.get("content") or "").strip()
+                if name in ("vietlegal-verification", "vlc-domain-verification") and content == expect:
+                    found = True
+                    break
+        log.info("probe url=%s found=%s", _host_only(payload.url), found)
+        return ProbeResponse(found=found, status=result.status)
+    finally:
+        await fetcher.aclose()
 
 
 @app.post("/internal/scan/{job_id}/cancel")

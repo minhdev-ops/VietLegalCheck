@@ -33,10 +33,18 @@ class AiController extends ApiController
             'project_id' => ['nullable', 'uuid', 'exists:projects,id'],
         ]);
 
+        $projectId = $data['project_id'] ?? null;
+        $organizationId = $request->user()->personalOrganization()?->id ?? $request->user()->organizations()->first()->id;
+
+        if ($projectId !== null) {
+            $project = Project::find($projectId);
+            abort_unless($project !== null && $project->organization_id === $organizationId, 403);
+        }
+
         $conversation = AiConversation::create([
             'user_id' => $request->user()->id,
-            'organization_id' => $request->user()->personalOrganization()?->id ?? $request->user()->organizations()->first()->id,
-            'project_id' => $data['project_id'] ?? null,
+            'organization_id' => $organizationId,
+            'project_id' => $projectId,
             'title' => $data['title'] ?? 'Trò chuyện mới',
         ]);
 

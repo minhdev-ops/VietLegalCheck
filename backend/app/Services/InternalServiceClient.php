@@ -33,6 +33,8 @@ final class InternalServiceClient
         $timestamp = (string) time();
         $signature = hash_hmac('sha256', "{$timestamp}.{$body}", $this->serviceKey());
 
+        // Gửi đúng chuỗi byte đã ký: ->post($url, $payload) sẽ re-encode JSON
+        // theo cách của Laravel và làm lệch chữ ký HMAC bên dịch vụ Python.
         $response = $this->http
             ->withHeaders([
                 'Content-Type' => 'application/json',
@@ -40,7 +42,8 @@ final class InternalServiceClient
                 'X-VL-Signature' => $signature,
             ])
             ->timeout(self::TIMEOUT)
-            ->post($this->url($path), $payload);
+            ->withBody($body, 'application/json')
+            ->post($this->url($path));
 
         return $this->parse($response);
     }

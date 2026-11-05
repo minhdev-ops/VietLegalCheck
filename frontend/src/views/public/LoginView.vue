@@ -5,9 +5,10 @@ import PublicShell from './PublicShell.vue'
 import UiInput from '@/components/ui/UiInput.vue'
 import UiButton from '@/components/ui/UiButton.vue'
 import Callout from '@/components/ui/Callout.vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore, type SystemUser } from '@/stores/auth'
 import { useToastsStore } from '@/stores/toasts'
 import type { ApiError } from '@/lib/api'
+import { setToken } from '@/lib/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,6 +19,9 @@ const email = ref('')
 const password = ref('')
 const twoFactorCode = ref('')
 const needTwoFactor = ref(false)
+// FR-AUTH-04: thiết lập 2FA bắt buộc cho tài khoản quản trị
+const setup = ref<{ secret?: string; otpauth?: string } | null>(null)
+const setupCode = ref('')
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
 
@@ -34,11 +38,30 @@ function fieldError(details: Record<string, unknown> | undefined, key: string): 
   return Array.isArray(messages) && typeof messages[0] === 'string' ? messages[0] : null
 }
 
+type LoginResult = SystemUser & {
+  requires_two_factor_setup?: boolean
+  setup_token?: string
+  secret?: string
+  otpauth?: string
+}
+
 async function onSubmit(): Promise<void> {
   errorMessage.value = null
   loading.value = true
   try {
-    await auth.login(email.value.trim(), password.value, twoFactorCode.value || undefined)
+    const result = (await auth.login(
+      email.value.trim(),
+      password.value,
+      twoFactorCode.value || undefined,
+    )) as LoginResult
+
+    if (result?.requires_two_factor_setup) {
+      // Bật xác thực hai bước bắt buộc trước khi vào hệ thống (FR-AUTH-04).
+      setToken(result.setup_token ?? null)
+      setup.value = { secret: result.secret, otpauth: result.otpauth }
+      return
+    }
+
     toasts.push('Đã đăng nhập', undefined, 'ok')
     await router.replace(nextPath())
   } catch (err) {
@@ -53,6 +76,26 @@ async function onSubmit(): Promise<void> {
         apiError.message ??
         'Đăng nhập không thành công. Thử lại sau.'
     }
+  } finally {
+    loading.value = false
+  }
+}
+
+async function completeSetup(): Promise<void> {
+  errorMessage.value = null
+  loading.value = true
+  try {
+    await auth.completeTwoFactorSetup(setupCode.value)
+    setup.value = null
+    setupCode.value = ''
+    // Thiết lập xong: đăng nhập lại với mã 2FA thường xuyên.
+    needTwoFactor.value = true
+    twoFactorCode.value = ''
+    toasts.push('Đã bật xác thực hai bước. Nhập mã để đăng nhập.', undefined, 'ok')
+  } catch (err) {
+    const apiError = err as ApiError
+    errorMessage.value =
+      fieldError(apiError.details, 'code') ?? apiError.message ?? 'Mã không đúng. Thử lại.'
   } finally {
     loading.value = false
   }
@@ -108,6 +151,28 @@ onMounted(() => {
         </Callout>
         <UiButton type="submit" :loading="loading">Đăng nhập</UiButton>
       </form>
+
+      <div v-if="setup" class="mt-10 rounded-lg border border-line bg-surface p-5">
+        <h2 class="font-serif text-lg font-semibold text-ink">Bật xác thực hai bước</h2>
+        <p class="mt-2 text-[13px] text-ink-muted">
+          Tài khoản quản trị yêu cầu xác thực hai bước (FR-AUTH-04). Quét mã bên dưới bằng ứng dụng
+          Authenticator rồi nhập mã 6 chữ số.
+        </p>
+        <p class="mt-3 break-all font-mono text-[11px] text-ink-muted">{{ setup.otpauth }}</p>
+        <p class="mt-2 break-all font-mono text-[11px] text-ink-muted">Khóa bí mật: {{ setup.secret }}</p>
+        <form class="mt-4 flex flex-col gap-3" @submit.prevent="completeSetup">
+          <UiInput
+            v-model="setupCode"
+            label="Mã xác thực từ ứng dụng"
+            inputmode="numeric"
+            maxlength="6"
+            placeholder="6 chữ số"
+            required
+            autocomplete="one-time-code"
+          />
+          <UiButton type="submit" :loading="loading">Hoàn tất thiết lập</UiButton>
+        </form>
+      </div>
 
       <p class="mt-8 text-[13px] text-ink-muted">
         Chưa có tài khoản?

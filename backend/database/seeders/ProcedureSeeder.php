@@ -50,7 +50,7 @@ class ProcedureSeeder extends Seeder
             'portal_url' => 'https://dichvucong.mic.gov.vn',
             'legal_basis' => [
                 ['provision_id' => null, 'citation' => 'Điều 11', 'document_number' => 'TT-BTTTT-03-2023'],
-                ['provision_id' => null, 'citation' => 'Điều 25', 'document_number' => 'LUAT-BCQT-2018'],
+                ['provision_id' => null, 'citation' => 'Điều 25', 'document_number' => '86/2018/QH14'],
             ],
             'activity_tags' => ['SOCIAL_NETWORK', 'INTERMEDIARY'],
             'obligation_codes' => ['R-CONTENT-01'],
@@ -108,7 +108,7 @@ class ProcedureSeeder extends Seeder
             'result' => 'Giấy phép cung cấp dịch vụ thanh toán trung gian',
             'portal_url' => 'https://sbv.gov.vn',
             'legal_basis' => [
-                ['provision_id' => null, 'citation' => 'Điều 8', 'document_number' => 'LUAT-TMDT-2023'],
+                ['provision_id' => null, 'citation' => 'Điều 8', 'document_number' => '122/2025/QH15'],
             ],
             'activity_tags' => ['FINTECH'],
             'obligation_codes' => ['R-FIN-01'],

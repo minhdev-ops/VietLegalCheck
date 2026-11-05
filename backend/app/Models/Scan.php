@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Scan extends BaseModel
 {
+    /**
+     * Phiên bản bộ tiêu chí đánh giá (FR-SCAN-05).
+     * Tăng khi thay đổi bộ tiêu chí kiểm tra website; scans cũ giữ phiên bản của chúng.
+     */
+    public const CRITERIA_VERSION = 1;
+
     protected function casts(): array
     {
         return [

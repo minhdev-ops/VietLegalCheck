@@ -8,6 +8,8 @@
       <tr><td>Ngày đánh giá pháp lý</td><td>{{ $as_of_date }}</td></tr>
       <tr><td>Ngày tạo báo cáo</td><td>{{ $generated_at }}</td></tr>
       <tr><td>Mã đánh giá</td><td>{{ $assessment->id }}</td></tr>
+      <tr><td>Phiên bản bộ quy tắc</td><td>{{ collect($rule_set_snapshot)->map(fn($r) => $r['rule_code'].' v'.$r['version'])->implode(', ') }}</td></tr>
+      <tr><td>Phiên bản bộ câu hỏi</td><td>v{{ $question_set_version }}</td></tr>
     </table>
   </div>
 
@@ -47,3 +49,6 @@
       </div>
     @endforeach
   @endforeach
+
+  <p class="hash">Mã băm SHA-256 của bộ quy tắc đã dùng: {{ $rule_set_hash ?? '' }}<br>Mã băm file PDF được ghi kèm báo cáo khi tải về.</p>
+@endsection

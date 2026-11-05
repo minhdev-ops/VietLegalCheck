@@ -31,7 +31,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     // ---- Xác thực ----
     Route::post('auth/register', [AuthController::class, 'register'])->name('auth.register');
-    Route::post('auth/login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:vlc-login')->name('auth.login');
+    Route::post('auth/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth.forgot-password');
+    Route::post('auth/reset-password', [AuthController::class, 'resetPassword'])->name('auth.reset-password');
+    Route::post('auth/verify-email', [AuthController::class, 'verifyEmail'])->name('auth.verify-email');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
@@ -66,11 +69,11 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
         // ---- Quét ----
         Route::get('projects/{project}/scans', [ScanController::class, 'index'])->name('projects.scans.index');
-        Route::post('projects/{project}/scans', [ScanController::class, 'store'])->name('projects.scans.store');
+        Route::post('projects/{project}/scans', [ScanController::class, 'store'])->middleware('throttle:vlc-scan')->name('projects.scans.store');
         Route::get('projects/{project}/scans/{scan}', [ScanController::class, 'show'])->name('projects.scans.show');
         Route::post('projects/{project}/scans/{scan}/cancel', [ScanController::class, 'cancel'])->name('projects.scans.cancel');
-        Route::post('projects/{project}/domain-verifications', [ScanController::class, 'verifyDomain'])->name('projects.domain.verify');
-        Route::get('projects/{project}/domain-verifications/{domain}/check', [ScanController::class, 'checkDomain'])->name('projects.domain.check');
+        Route::post('projects/{project}/domain-verifications', [ScanController::class, 'verifyDomain'])->middleware('throttle:vlc-verify')->name('projects.domain.verify');
+        Route::get('projects/{project}/domain-verifications/{domain}/check', [ScanController::class, 'checkDomain'])->middleware('throttle:vlc-verify')->name('projects.domain.check');
 
         // ---- Tài liệu ----
         Route::get('projects/{project}/documents', [DocumentController::class, 'index'])->name('projects.documents.index');
@@ -94,7 +97,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::get('ai/conversations', [AiController::class, 'conversations'])->name('ai.conversations');
         Route::post('ai/conversations', [AiController::class, 'storeConversation'])->name('ai.conversations.store');
         Route::get('ai/conversations/{conversation}/messages', [AiController::class, 'messages'])->name('ai.conversations.messages');
-        Route::post('ai/conversations/{conversation}/ask', [AiController::class, 'ask'])->name('ai.conversations.ask');
+        Route::post('ai/conversations/{conversation}/ask', [AiController::class, 'ask'])->middleware('throttle:vlc-ai')->name('ai.conversations.ask');
 
         // ---- Tác vụ & thông báo ----
         Route::get('jobs/{job}', [JobController::class, 'show'])->name('jobs.show');

@@ -109,8 +109,9 @@ class OrganizationController extends ApiController
             abort(403, 'Không thuộc tổ chức này.');
         }
 
-        if ($required && $membership->role !== OrgRole::OWNER && $membership->role !== OrgRole::ADMIN && $required !== OrgRole::ADMIN) {
-            abort(403, 'Cần quyền quản trị tổ chức.');
+        // FR-AUTH-03 / SRS 2.2: kiểm tra đúng vai trò tối thiểu trong tổ chức.
+        if ($required instanceof OrgRole && ! $membership->role->atLeast($required)) {
+            abort(403, 'Cần quyền '.mb_strtolower($required->label(), 'UTF-8').' trong tổ chức.');
         }
     }
 }
