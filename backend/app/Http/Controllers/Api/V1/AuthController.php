@@ -129,7 +129,7 @@ class AuthController extends ApiController
         $request->user()->currentAccessToken()->delete();
         $this->audit->log('USER_LOGOUT', $request->user());
 
-        return $this->ok();
+        return $this->ok(['message' => 'Đăng xuất thành công.']);
     }
 
     public function me(Request $request): JsonResponse
@@ -183,7 +183,7 @@ class AuthController extends ApiController
         ]);
         $this->audit->log('USER_2FA_DISABLED', $user);
 
-        return $this->ok();
+        return $this->ok(['message' => 'Đã tắt xác thực hai bước.']);
     }
 
     /**
@@ -250,7 +250,7 @@ class AuthController extends ApiController
         DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
         $this->audit->log('PASSWORD_RESET', $user);
 
-        return $this->ok();
+        return $this->ok(['message' => 'Đặt lại mật khẩu thành công.']);
     }
 
     public function verifyEmail(Request $request): JsonResponse

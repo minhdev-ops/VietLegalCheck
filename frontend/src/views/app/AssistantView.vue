@@ -312,7 +312,10 @@ onUnmounted(() => {
             class="border-0 bg-transparent"
             @action="onNewConversation"
           />
-          <ul v-else class="flex flex-col gap-5">
+          <Callout v-if="streamError" tone="danger" icon="warning" title="Không thể gửi câu hỏi" class="mb-4">
+            {{ streamError }}
+          </Callout>
+          <ul v-if="visibleMessages.length > 0" class="flex flex-col gap-5">
             <li
               v-for="message in visibleMessages"
               :key="message.id"

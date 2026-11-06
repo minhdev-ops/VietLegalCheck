@@ -74,13 +74,20 @@ class AiController extends ApiController
         ]);
 
         if (filter_var($data['stream'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
-            return response()->streamDownload(function () use ($conversation, $data) {
+            return response()->stream(function () use ($conversation, $data) {
                 foreach ($this->ai->streamAnswer($conversation, $data['question'], $data) as $chunk) {
                     echo 'data: '.json_encode($chunk, JSON_UNESCAPED_UNICODE)."\n\n";
-                    ob_flush();
+                    if (ob_get_level() > 0) { ob_flush(); }
                     flush();
+                    if (($chunk['type'] ?? '') === 'final') {
+                        $this->audit->log('AI_ASKED', $conversation, ['refused' => (bool) ($chunk['refused'] ?? false)]);
+                    }
                 }
-            }, 'ai-stream.txt', ['Content-Type' => 'text/event-stream']);
+            }, 200, [
+                'Content-Type' => 'text/event-stream',
+                'Cache-Control' => 'no-cache',
+                'X-Accel-Buffering' => 'no',
+            ]);
         }
 
         $message = $this->ai->answer($conversation, $data['question'], $data);

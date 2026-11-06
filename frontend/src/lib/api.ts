@@ -62,8 +62,8 @@ async function request<T>(method: string, path: string, body?: unknown, params?:
 
   if (response.status === 401) {
     setToken(null)
-    if (!location.pathname.startsWith('/login') && !location.pathname.startsWith('/dang-nhap')) {
-      location.assign('/login?next=' + encodeURIComponent(location.pathname))
+    if (!location.pathname.startsWith('/dang-nhap')) {
+      location.assign('/dang-nhap?next=' + encodeURIComponent(location.pathname))
     }
   }
 

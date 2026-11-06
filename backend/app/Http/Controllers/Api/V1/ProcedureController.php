@@ -18,7 +18,7 @@ class ProcedureController extends ApiController
     {
         $tagCodes = $project?->tagCodes() ?? [];
         $query = AdministrativeProcedure::query()
-            ->with('requirements', 'provisions.document')
+            ->with('requirements')
             ->when($tagCodes !== [], fn ($builder) => $builder->whereJsonContains('activity_tags', $tagCodes))
             ->when($request->string('q')->toString(), fn ($builder, $term) => $builder->where('name', 'ilike', "%{$term}%"))
             ->latest();
@@ -28,7 +28,7 @@ class ProcedureController extends ApiController
 
     public function show(string $id): JsonResponse
     {
-        return $this->ok(['procedure' => AdministrativeProcedure::with('requirements', 'provisions.document')->findOrFail($id)]);
+        return $this->ok(['procedure' => AdministrativeProcedure::with('requirements')->findOrFail($id)]);
     }
 
     public function track(Request $request, Project $project): JsonResponse
