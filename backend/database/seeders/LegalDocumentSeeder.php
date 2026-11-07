@@ -260,7 +260,7 @@ class LegalDocumentSeeder extends Seeder
             'provisions' => [],
         ],
         [
-            'doc_number' => '147/2024/NĐ-CP',
+            'doc_number' => '53/2022/NĐ-CP',
             'title' => 'Nghị định 53/2022/NĐ-CP về an toàn thông tin mạng',
             'doc_type' => 'NGHI_DINH',
             'issuer' => 'Chính phủ',
